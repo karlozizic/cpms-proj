@@ -43,7 +43,7 @@ namespace OCPP.Core.Server
             {
                 Logger.LogTrace("Processing startTransaction request...");
                 StartTransactionRequest startTransactionRequest = DeserializeMessage<StartTransactionRequest>(msgIn);
-                Logger.LogTrace("StartTransaction => Message deserialized");
+                Logger.LogInformation($"StartTransaction => Message deserialized {JsonConvert.SerializeObject(startTransactionRequest)}");
 
                 string idTag = CleanChargeTagId(startTransactionRequest.IdTag, Logger);
                 ChargeTag ct = DbContext.Find<ChargeTag>(idTag);

@@ -68,7 +68,7 @@ namespace OCPP.Core.Server
             {
                 Logger.LogTrace("Processing meter values...");
                 MeterValuesRequest meterValueRequest = DeserializeMessage<MeterValuesRequest>(msgIn);
-                Logger.LogTrace("MeterValues => Message deserialized");
+                Logger.LogInformation($"MeterValues => Message deserialized {JsonConvert.SerializeObject(meterValueRequest)}");
 
                 connectorId = meterValueRequest.ConnectorId;
 
