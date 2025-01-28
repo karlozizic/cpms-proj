@@ -350,16 +350,47 @@
 
         $('#mv').click(function () {
             sessionStorage.setItem('LastAction', "MeterValues");
-			ssid = sessionStorage.getItem('TransactionId');
-            var val = String($("#metervalue").val());
-			var MV;
-			if (ssid == null)
-				MV = JSON.stringify([2, id, "MeterValues", {"connectorId": 2, "meterValue": [{"timestamp": formatDate(new Date()), "sampledValue": [{"value": val, "measurand": "Energy.Active.Import.Register"},{"value": "800", "measurand": "Power.Active.Import"},{"value": "47", "measurand": "SoC"}]}]}]);
-			else
-				MV = JSON.stringify([2, id, "MeterValues", {"connectorId": 2, "transactionId": ssid, "meterValue": [{"timestamp": formatDate(new Date()), "sampledValue": [{"value": val, "measurand": "Energy.Active.Import.Register"},{"value": "800", "measurand": "Power.Active.Import"},{"value": "47", "measurand": "SoC"}]}]}]);
-            _websocket.send(MV);
+            ssid = sessionStorage.getItem('TransactionId');
 
+            // Validacija `transactionId`
+            if (!ssid || isNaN(ssid)) {
+                logMsg("Error: Invalid Transaction ID. Please start a transaction first.");
+                return;
+            }
+
+            // Validacija `meterValue`
+            var val = $("#metervalue").val();
+            if (!val || isNaN(val)) {
+                logMsg("Error: Invalid Meter Value. Please enter a valid number.");
+                return;
+            }
+
+            // Konverzija vrijednosti u `int`
+            var transactionId = parseInt(ssid, 10);
+            var meterValue = parseFloat(val);
+
+            // Kreiranje JSON poruke za slanje
+            var MV = JSON.stringify([2, id, "MeterValues", {
+                "connectorId": 2,
+                "transactionId": transactionId, // Osigurano da je int
+                "meterValue": [{
+                    "timestamp": formatDate(new Date()),
+                    "sampledValue": [
+                        { "value": String(meterValue), "measurand": "Energy.Active.Import.Register" },
+                        { "value": "800", "measurand": "Power.Active.Import" },
+                        { "value": "47", "measurand": "SoC" }
+                    ]
+                }]
+            }]);
+
+            // Logovanje JSON poruke
+            logMsg("Sending MeterValues: " + MV);
+
+            // Slanje preko websocket-a
+            _websocket.send(MV);
         });
+
+
         $('#heartbeat').click(function () {
             send_heartbeat();
         });

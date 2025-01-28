@@ -105,14 +105,15 @@ namespace OCPP.Core.Server
                         if (!string.IsNullOrWhiteSpace(chargePoint.Username))
                         {
                             // Chargepoint MUST send basic authentication header
-
-                            bool basicAuthSuccess = false;
+                            //basic auth removed
+                            bool basicAuthSuccess = true;
+                            /*bool basicAuthSuccess = false;
                             string authHeader = context.Request.Headers["Authorization"];
                             if (!string.IsNullOrEmpty(authHeader))
                             {
-                                string[] cred = System.Text.ASCIIEncoding.ASCII.GetString(Convert.FromBase64String(authHeader.Substring(6))).Split(':');
-                                if (cred.Length == 2 && chargePoint.Username == cred[0] && chargePoint.Password == cred[1])
-                                {
+                            string[] cred = System.Text.ASCIIEncoding.ASCII.GetString(Convert.FromBase64String(authHeader.Substring(6))).Split(':');
+                            if (cred.Length == 2 && chargePoint.Username == cred[0] && chargePoint.Password == cred[1])
+                            {
                                     // Authentication match => OK
                                     _logger.LogInformation("OCPPMiddleware => SUCCESS: Basic authentication for chargepoint '{0}' match", chargePoint.ChargePointId);
                                     basicAuthSuccess = true;
@@ -128,7 +129,7 @@ namespace OCPP.Core.Server
                                 context.Response.Headers.Append("WWW-Authenticate", "Basic realm=\"OCPP.Core\"");
                                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                                 return;
-                            }
+                            }*/
 
                         }
                         else if (!string.IsNullOrWhiteSpace(chargePoint.ClientCertThumb))
