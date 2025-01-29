@@ -1,0 +1,2 @@
+docker cp schema.sql db-master:/schema.sql
+docker exec -it db-master psql -U repuser -d mydb -f /schema.sql

@@ -1,0 +1,62 @@
+services:
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.9
+    container_name: stolon-etcd
+    command: etcd --name infra0 --initial-advertise-peer-urls http://0.0.0.0:2388 --listen-peer-urls http://0.0.0.0:2388 --advertise-client-urls http://0.0.0.0:2387 --listen-client-urls http://0.0.0.0:2387 --initial-cluster infra0=http://0.0.0.0:2388
+    ports:
+      - "2387:2387"
+      - "2388:2388"
+
+  stolon-keeper-1:
+    image: sorintlab/stolon
+    container_name: stolon-keeper-1
+    command: keeper
+    environment:
+      STKEEPER_CLUSTER_NAME: stolon-cluster
+      STKEEPER_STORE_BACKEND: etcd
+      STKEEPER_STORE_ENDPOINTS: etcd:2387
+      STKEEPER_POSTGRESQL_DATA_DIR: /var/lib/postgresql/data
+      STKEEPER_POSTGRESQL_SUPERUSER_PASSWORD: admin_password
+    depends_on:
+      - etcd
+    ports:
+      - "5432:5432"
+
+  stolon-keeper-2:
+    image: sorintlab/stolon
+    container_name: stolon-keeper-2
+    command: keeper
+    environment:
+      STKEEPER_CLUSTER_NAME: stolon-cluster
+      STKEEPER_STORE_BACKEND: etcd
+      STKEEPER_STORE_ENDPOINTS: etcd:2387
+      STKEEPER_POSTGRESQL_DATA_DIR: /var/lib/postgresql/data
+      STKEEPER_POSTGRESQL_SUPERUSER_PASSWORD: admin_password
+    depends_on:
+      - etcd
+
+  stolon-sentinel:
+    image: sorintlab/stolon
+    container_name: stolon-sentinel
+    command: sentinel
+    environment:
+      STSENTINEL_CLUSTER_NAME: stolon-cluster
+      STSENTINEL_STORE_BACKEND: etcd
+      STSENTINEL_STORE_ENDPOINTS: etcd:2387
+    depends_on:
+      - etcd
+      - stolon-keeper-1
+      - stolon-keeper-2
+
+  stolon-proxy:
+    image: sorintlab/stolon
+    container_name: stolon-proxy
+    command: proxy
+    environment:
+      STPROXY_CLUSTER_NAME: stolon-cluster
+      STPROXY_STORE_BACKEND: etcd
+      STPROXY_STORE_ENDPOINTS: etcd:2387
+    depends_on:
+      - etcd
+    ports:
+      - "5433:5432"

@@ -1,0 +1,58 @@
+services:
+  postgres_master:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: ocpp_user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ocpp_core
+    volumes:
+      - postgres_master_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    command: |
+      postgres 
+      -c wal_level=replica 
+      -c max_wal_senders=2 
+      -c max_replication_slots=2
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ocpp_user -d ocpp_core"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres_slave:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: ocpp_user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ocpp_core
+    volumes:
+      - postgres_slave_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    command: |
+      postgres 
+      -c hot_standby=on
+    depends_on:
+      postgres_master:
+        condition: service_healthy
+
+  pgbouncer:
+    image: edoburu/pgbouncer:1.18.0
+    environment:
+      DB_USER: ocpp_user
+      DB_PASSWORD: password
+      DB_HOST: postgres_master
+      DB_NAME: ocpp_core
+      POOL_MODE: transaction
+      MAX_CLIENT_CONN: 1000
+      DEFAULT_POOL_SIZE: 100
+    ports:
+      - "6432:6432"
+    depends_on:
+      postgres_master:
+        condition: service_healthy
+
+volumes:
+  postgres_master_data:
+  postgres_slave_data:
