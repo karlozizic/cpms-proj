@@ -262,21 +262,33 @@
         _websocket.send(strtT);
     }
 
-    function stopTransaction(transaction_id = false){
+    function stopTransaction(transaction_id = false) {
         sessionStorage.setItem('LastAction', "stopTransaction");
         transaction_id == false ? ssid = sessionStorage.getItem('TransactionId') : ssid = transaction_id;
         $('.indicator').hide();
         connector_locked = false;
         logMsg("Connector status changed to: " + connector_locked);
         $('#yellow').show();
-        var stpT = JSON.stringify([2, id, "StopTransaction",{
+
+        // Dohvatanje trenutne vrednosti `meterValue`
+        var meterStop = parseFloat($("#metervalue").val());
+        if (!meterStop || isNaN(meterStop)) {
+            logMsg("Error: Invalid Meter Value. Please provide a valid number for meter value.");
+            return;
+        }
+
+        var stpT = JSON.stringify([2, id, "StopTransaction", {
             "transactionId": parseInt(ssid),
             "idTag": $("#TAG").val(),
             "timestamp": formatDate(new Date()),
-            "meterStop": 20
+            "meterStop": meterStop // Koristi trenutnu vrednost iz `#metervalue`
         }]);
+
+        logMsg("Sending StopTransaction: " + stpT);
+
         _websocket.send(stpT);
     }
+
 
     function handleData(data, request = false){
         var lastAction = getLastAction();

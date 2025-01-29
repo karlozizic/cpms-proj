@@ -40,7 +40,7 @@ namespace OCPP.Core.Server
             {
                 Logger.LogTrace("Processing stopTransaction request...");
                 StopTransactionRequest stopTransactionRequest = DeserializeMessage<StopTransactionRequest>(msgIn);
-                Logger.LogTrace("StopTransaction => Message deserialized");
+                Logger.LogInformation($"StopTransaction => Message deserialized {JsonConvert.SerializeObject(stopTransactionRequest)}");
 
                 string idTag = CleanChargeTagId(stopTransactionRequest.IdTag, Logger);
                 ChargeTag ct = DbContext.Find<ChargeTag>(idTag);
