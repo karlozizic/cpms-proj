@@ -15,10 +15,14 @@ namespace OCPP.Core.Database
         {
             string sqlServerConnectionString = configuration.GetConnectionString("SqlServer");
             string sqliteConnectionString = configuration.GetConnectionString("SQLite");
+            string postgreSqlConnectionString = configuration.GetConnectionString("PostgreSQL");
 
             if (!string.IsNullOrWhiteSpace(sqlServerConnectionString))
             {
                 services.AddDbContext<OCPPCoreContext>(options => options.UseSqlServer(sqlServerConnectionString), ServiceLifetime.Transient);
+            } else if (!string.IsNullOrWhiteSpace(postgreSqlConnectionString))
+            {
+                services.AddDbContext<OCPPCoreContext>(options => options.UseNpgsql(postgreSqlConnectionString), ServiceLifetime.Transient);
             }
             else if (!string.IsNullOrWhiteSpace(sqliteConnectionString))
             {

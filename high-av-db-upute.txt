@@ -1,0 +1,10 @@
+Database setup
+docker-compose up -d
+docker cp new_schema.sql db-master:/schema.sql
+docker exec -it db-master psql -U repuser -d mydb -f /schema.sql
+
+
+Verify if db is created -> login db:
+docker exec -it db-master psql -U repuser -d mydb
+SELECT * FROM chargepoint;
+SELECT * FROM transactions;
