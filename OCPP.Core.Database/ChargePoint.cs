@@ -19,6 +19,10 @@ namespace OCPP.Core.Database
         public string Username { get; set; }
         public string Password { get; set; }
         public string ClientCertThumb { get; set; }
+        public int LocationId { get; set; }
+        public virtual ChargeLocation ChargeLocation { get; set; }
+        public double? MaxPower { get; set; }
+        public double? CurrentPower { get; set; }
 
         public virtual ICollection<Transaction> Transactions { get; set; }
     }

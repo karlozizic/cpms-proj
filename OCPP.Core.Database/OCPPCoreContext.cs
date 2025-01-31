@@ -21,6 +21,7 @@ namespace OCPP.Core.Database
         public virtual DbSet<ConnectorStatus> ConnectorStatuses { get; set; }
         public virtual DbSet<MessageLog> MessageLogs { get; set; }
         public virtual DbSet<Transaction> Transactions { get; set; }
+        public virtual DbSet<ChargeLocation> ChargeLocations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -112,6 +113,35 @@ namespace OCPP.Core.Database
 
                 entity.HasIndex(e => new { e.ChargePointId, e.ConnectorId });
             });
+            
+            modelBuilder.Entity<ChargeLocation>(entity =>
+            {
+                entity.ToTable("ChargeLocation");
+
+                entity.HasKey(e => e.LocationId);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.Address)
+                    .HasMaxLength(300);
+
+                entity.Property(e => e.Latitude)
+                    .IsRequired();
+
+                entity.Property(e => e.Longitude)
+                    .IsRequired();
+
+                entity.Property(e => e.MaxPowerLimit)
+                    .IsRequired();
+            });
+
+            modelBuilder.Entity<ChargePoint>()
+                .HasOne(cp => cp.ChargeLocation)
+                .WithMany(cl => cl.ChargePoints)
+                .HasForeignKey(cp => cp.LocationId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             OnModelCreatingPartial(modelBuilder);
         }

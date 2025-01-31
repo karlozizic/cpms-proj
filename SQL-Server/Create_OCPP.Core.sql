@@ -153,3 +153,38 @@ USE [master]
 GO
 ALTER DATABASE [OCPP.Core] SET  READ_WRITE 
 GO
+
+CREATE TABLE ChargeLocation (
+    LocationId INT PRIMARY KEY IDENTITY(1,1),
+    Name NVARCHAR(200) NOT NULL,
+    Address NVARCHAR(300),
+    Latitude FLOAT NOT NULL,
+    Longitude FLOAT NOT NULL,
+    MaxPowerLimit FLOAT NOT NULL
+);
+
+ALTER TABLE ChargePoint ADD LocationId INT NOT NULL DEFAULT 1;
+
+ALTER TABLE ChargePoint ADD CONSTRAINT FK_ChargePoint_ChargeLocation
+FOREIGN KEY (LocationId) REFERENCES ChargeLocation(LocationId)
+ON DELETE CASCADE;
+CREATE TABLE ChargeLocation (
+    LocationId INT PRIMARY KEY IDENTITY(1,1),
+    Name NVARCHAR(200) NOT NULL,
+    Address NVARCHAR(300),
+    Latitude FLOAT NOT NULL,
+    Longitude FLOAT NOT NULL,
+    MaxPowerLimit FLOAT NOT NULL
+);
+
+ALTER TABLE ChargePoint ADD LocationId INT NOT NULL DEFAULT 1;
+
+ALTER TABLE ChargePoint ADD CONSTRAINT FK_ChargePoint_ChargeLocation
+FOREIGN KEY (LocationId) REFERENCES ChargeLocation(LocationId)
+ON DELETE CASCADE;
+
+ALTER TABLE ChargeLocation ADD CurrentPower FLOAT NOT NULL DEFAULT 0;
+ALTER TABLE ChargePoint ADD CurrentPower FLOAT NULL;
+ALTER TABLE ChargePoint ADD MaxPower FLOAT NULL;
+
+
