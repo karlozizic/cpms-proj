@@ -15,6 +15,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OCPP.Core.Database;
+using OCPP.Core.Management.Controllers;
+using OCPP.Core.Management.Services;
 
 namespace OCPP.Core.Management
 {
@@ -60,10 +62,11 @@ namespace OCPP.Core.Management
                 m => new UserManager(Configuration)
                 );
             services.AddDistributedMemoryCache();
+            services.AddSingleton<LoadBalancingService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceScopeFactory serviceScopeFactory)
         {
             if (env.IsDevelopment())
             {
@@ -92,6 +95,9 @@ namespace OCPP.Core.Management
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}/{connectorId?}/");
             });
+            
+            var loadBalancingService = app.ApplicationServices.GetRequiredService<LoadBalancingService>();
+            loadBalancingService.Start();
         }
     }
 }

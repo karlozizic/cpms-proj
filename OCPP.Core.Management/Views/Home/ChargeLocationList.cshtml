@@ -1,0 +1,59 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using OCPP.Core.Management.Models
+@model ChargeLocationViewModel
+@inject IViewLocalizer Localizer
+
+@{
+ViewData["Title"] = @Localizer["Charge Locations"];
+}
+
+<h2>@Localizer["Charge Locations"]</h2>
+
+<p>
+    <a asp-action="CreateChargeLocation" class="btn btn-primary">@Localizer["Add New Location"]</a>
+</p>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>@Localizer["Name"]</th>
+        <th>@Localizer["Address"]</th>
+        <th>@Localizer["Latitude"]</th>
+        <th>@Localizer["Longitude"]</th>
+        <th>@Localizer["Max Power Limit"]</th>
+        <th>@Localizer["Current Power"]</th>
+        <th>@Localizer["Actions"]</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (Model?.ChargeLocations != null && Model.ChargeLocations.Any())
+    {
+    @foreach (var location in Model.ChargeLocations)
+    {
+    <tr>
+        <td>@location.Name</td>
+        <td>@location.Address</td>
+        <td>@location.Latitude</td>
+        <td>@location.Longitude</td>
+        <td>@location.MaxPowerLimit</td>
+        <td>@location.CurrentPower</td>
+        <td>
+            <a asp-action="ChargeLocationDetails" asp-route-id="@location.LocationId" class="btn btn-info">@Localizer["Details"]</a>
+            <a asp-action="EditChargeLocation" asp-route-id="@location.LocationId" class="btn btn-warning">@Localizer["Edit"]</a>
+            @*<form asp-action="DeleteChargeLocation" asp-route-id="@location.LocationId" method="post" class="d-inline">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('@Localizer["Are you sure you want to delete this location?"]')">
+                    @Localizer["Delete"]
+                </button>
+            </form>*@
+        </td>
+    </tr>
+    }
+    }
+    else
+    {
+    <tr>
+        <td colspan="7" class="text-center">@Localizer["No charge locations available."]</td>
+    </tr>
+    }
+    </tbody>
+</table>

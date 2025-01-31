@@ -1,0 +1,69 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using OCPP.Core.Management.Models
+@model ChargeLocationViewModel
+@inject IViewLocalizer Localizer
+
+@{
+ViewData["Title"] = @Localizer["Charge Location Details"];
+}
+
+<h2>@Localizer["Edit Charge Location"]</h2>
+
+@if (Model != null)
+{
+<form asp-action="EditChargeLocation" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="container">
+        <div class="form-group mb-4">
+            <label for="LocationId">@Localizer["Location ID"]</label>
+            <input type="text" readonly class="form-control" id="LocationId" name="LocationId" value="@Model.LocationId">
+        </div>
+
+        <div class="form-group">
+            <label for="Name">@Localizer["Name"]</label>
+            <input class="form-control" id="Name" name="Name" type="text" value="@Model.Name" required />
+        </div>
+
+        <div class="form-group">
+            <label for="Address">@Localizer["Address"]</label>
+            <input class="form-control" id="Address" name="Address" type="text" value="@Model.Address" required />
+        </div>
+
+        <div class="form-group">
+            <label for="Latitude">@Localizer["Latitude"]</label>
+            <input class="form-control" id="Latitude" name="Latitude" type="number" step="any" value="@Model.Latitude" required />
+        </div>
+
+        <div class="form-group">
+            <label for="Longitude">@Localizer["Longitude"]</label>
+            <input class="form-control" id="Longitude" name="Longitude" type="number" step="any" value="@Model.Longitude" required />
+        </div>
+
+        <div class="form-group">
+            <label for="MaxPowerLimit">@Localizer["Max Power Limit"]</label>
+            <input class="form-control" id="MaxPowerLimit" name="MaxPowerLimit" type="number" step="any" value="@Model.MaxPowerLimit" required />
+        </div>
+
+        <div class="form-group">
+            <label for="CurrentPower">@Localizer["Current Power"]</label>
+            <input class="form-control" id="CurrentPower" name="CurrentPower" type="number" step="any" value="@Model.CurrentPower" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">@Localizer["Save Changes"]</button>
+
+        @if (Model.LocationId > 0)
+        {
+        <form asp-action="DeleteChargeLocation" asp-route-id="@Model.LocationId" method="post" class="d-inline">
+            <button type="submit" class="btn btn-danger" onclick="return confirm('@Localizer["Are you sure you want to delete this location?"]')">
+                @Localizer["Delete"]
+            </button>
+        </form>
+        }
+    </div>
+</form>
+}
+else
+{
+<p class="text-danger">@Localizer["Charge location not found."]</p>
+}
